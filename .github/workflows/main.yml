@@ -1,0 +1,29 @@
+name: HBX Bot 24/7
+
+on:
+  push:
+    branches: [ main ]
+  schedule:
+    - cron: '0 */6 * * *' # প্রতি ৬ ঘণ্টা পর অটো রিস্টার্ট হবে
+  workflow_dispatch: # ম্যানুয়ালি চালু করার জন্য
+
+jobs:
+  run-bot:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
+
+      - name: Install Dependencies
+        run: |
+          pip install pyTelegramBotAPI instaloader pyotp requests colorama
+
+      - name: Run HBX Bot
+        env:
+          BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
+        run: python hbx.py
