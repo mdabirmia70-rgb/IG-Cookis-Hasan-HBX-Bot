@@ -26,4 +26,4 @@ jobs:
       - name: Run HBX Bot
         env:
           BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
-        run: python HBX
+        run: python hbx.py
