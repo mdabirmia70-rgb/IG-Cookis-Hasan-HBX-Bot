@@ -1,0 +1,107 @@
+
+import os
+import sys
+import time
+import platform
+import subprocess
+
+# ================= [ ০. AUTO PACKAGE INSTALLER ] =================
+REQUIRED_PACKAGES = {
+    "telebot": "pyTelegramBotAPI",
+    "instaloader": "instaloader",
+    "pyotp": "pyotp",
+    "requests": "requests",
+    "openpyxl": "openpyxl",
+    "colorama": "colorama"
+}
+
+for module_name, package_name in REQUIRED_PACKAGES.items():
+    try:
+        __import__(module_name)
+    except ImportError:
+        print(f"📦 Missing package ইন্সটল হচ্ছে: {package_name}...")
+        try:
+            subprocess.check_call([sys.executable, "-m", "pip", "install", package_name], stdout=subprocess.DEVNULL)
+        except Exception:
+            pass
+
+# কালার কোড
+R = "\033[1;31m" # Red
+G = "\033[1;32m" # Green
+Y = "\033[1;33m" # Yellow
+C = "\033[1;36m" # Cyan
+W = "\033[1;37m" # White
+RESET = "\033[0m"
+
+def clear():
+    os.system('clear' if os.name == 'posix' else 'cls')
+
+def type_print(text):
+    for char in text:
+        sys.stdout.write(char)
+        sys.stdout.flush()
+        time.sleep(0.01)
+    print()
+
+def get_arch():
+    machine = platform.machine().lower()
+    if "aarch64" in machine or "arm64" in machine:
+        return "64"
+    return "32"
+
+def main():
+    clear()
+    arch = get_arch()
+    
+    # ৩২-বিট ইউজারদের জন্য ব্লক
+    if arch != "64":
+        print(f"\n{R} [!] সরি মামা, আপনার ফোনটি ৩২-বিটের। এই প্রফেশনাল টুলসটি আপনার ফোনে চলবে না।{RESET}")
+        sys.exit()
+
+    type_print(f"{C} [!] HBX আল্ট্রা ইঞ্জিন স্পিড লোড হচ্ছে...{RESET}")
+    time.sleep(0.5)
+
+    # সুনির্দিষ্টভাবে ADMINUSER লোড করার ট্রাই ব্লক
+    try:
+        import ADMINUSER
+    except ImportError as e:
+        print(f"\n{R} [!] ত্রুটি: ADMINUSER.so ফাইলটি পাওয়া যায়নি অথবা এটি আপনার আর্কিটেকচারের সাথে মিলছে না!{RESET}")
+        print(f"{Y} [?] টিপস: নিশ্চিত করুন ফাইলের নাম 'ADMINUSER.so' আছে এবং এটি একই ফোল্ডারে আছে।{RESET}")
+        sys.exit()
+
+    try:
+        # ADMINUSER মডিউল থেকে লোগো ফাংশন কল
+        if hasattr(ADMINUSER, "professional_logo"):
+            ADMINUSER.professional_logo()
+        else:
+            print(f"{C} ⚡ 「 HBX MARKETING ENGINE 」 ⚡{RESET}")
+        
+        print(f"  │ {G}[+] {W}সিস্টেম আর্কিটেকচার : {G}পাসড (৬৪-বিট){RESET}")
+        print(f"  │ {G}[+] {W}ইঞ্জিন স্ট্যাটাস     : {G}অনলাইন (v31.0){RESET}")
+        print(f"  └────────────────────────────────────────────────────────")
+        print(f"\n{G} [🚀] পোলিং সাকসেসফুলি স্টার্ট হয়েছে... কোপানো শুরু করেন মামাহ!{RESET}\n")
+
+        # ইনফিনিটি পোলিং মেকানিজম
+        while True:
+            try:
+                if hasattr(ADMINUSER, "bot"):
+                    ADMINUSER.bot.infinity_polling(timeout=15, long_polling_timeout=5)
+                else:
+                    print(f"{R} [!] ত্রুটি: ADMINUSER মডিউলের ভেতর 'bot' অবজেক্টটি খুঁজে পাওয়া যায়নি!{RESET}")
+                    sys.exit()
+            except Exception:
+                time.sleep(5)
+
+    except KeyboardInterrupt:
+        print(f"\n\n{R} [!] ইউজার দ্বারা বটের কাজ বন্ধ করা হয়েছে।{RESET}")
+        sys.exit()
+    except Exception as e:
+        print(f"\n{R} [!] মারাত্মক এরর: {e}{RESET}")
+        sys.exit()
+
+if __name__ == "__main__":
+    try:
+        main()
+    except KeyboardInterrupt:
+        print(f"\n\n{R} [!] প্রসেস বন্ধ করা হয়েছে।{RESET}")
+        sys.exit()
