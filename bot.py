@@ -20,33 +20,44 @@ def run_single_test_login(url, username, password, otp_secret):
     chrome_options.add_argument("--headless")  # ব্যাকগ্রাউন্ডে চালানোর জন্য
     chrome_options.add_argument("--no-sandbox")
     chrome_options.add_argument("--disable-dev-shm-usage")
+    # বট সনাক্তকরণ এড়াতে Standard User-Agent যুক্ত করা হয়েছে
+    chrome_options.add_argument("user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/115.0.0.0 Safari/537.36")
 
     driver = webdriver.Chrome(options=chrome_options)
     cookies_str = ""
 
     try:
         driver.get(url)
-        time.sleep(2)
+        time.sleep(4)
 
         # ১. ইউজারনেম ও পাসওয়ার্ড ইনপুট
         driver.find_element(By.NAME, "username").send_keys(username)
         driver.find_element(By.NAME, "password").send_keys(password)
-        driver.find_element(By.XPATH, '//button[@type="submit"]').click()
-        time.sleep(3)
+        
+        # সাবমিট বাটনে ক্লিক
+        login_btn = driver.find_element(By.XPATH, '//button[@type="submit"]')
+        login_btn.click()
+        time.sleep(5)
 
-        # ২. TOTP 2FA ইনপুট (যদি সিক্রেট প্রদান করা হয়ে থাকে)
+        # ২. TOTP 2FA ইনপুট (যদি সিক্রেট দেওয়া থাকে)
         if otp_secret:
             totp = pyotp.TOTP(otp_secret)
             token = totp.now()
-            driver.find_element(By.NAME, "otp_code").send_keys(token)
-            driver.find_element(By.XPATH, '//button[@id="otp-submit"]').click()
-            time.sleep(3)
+            
+            # OTP ইনপুট বক্স খুঁজে মান বসানো
+            otp_box = driver.find_element(By.NAME, "verificationCode")
+            otp_box.send_keys(token)
+            
+            confirm_btn = driver.find_element(By.XPATH, '//button[contains(text(),"Confirm") or @type="button"]')
+            confirm_btn.click()
+            time.sleep(5)
 
-        # ৩. সেশন কুকিজ প্রাপ্তি
+        # ৩. সেশন কুকিজ সংগ্রহ
         cookies = driver.get_cookies()
         if cookies:
             cookies_str = "; ".join([f"{c['name']}={c['value']}" for c in cookies])
-        return cookies_str
+        
+        return cookies_str if cookies_str else None
 
     except Exception as e:
         print(f"[{username}] Automation error: {e}")
@@ -58,7 +69,6 @@ def run_single_test_login(url, username, password, otp_secret):
 # ----------------- Telegram Bot Handlers -----------------
 @bot.message_handler(commands=['start'])
 def send_welcome(message):
-    # এখানে বাটন তৈরি এবং সেটআপ করা হয়েছে
     markup = types.ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=False)
     btn_start = types.KeyboardButton("🚀 কাজ শুরু করো")
     markup.add(btn_start)
@@ -103,15 +113,17 @@ def get_password(message):
 def process_all_data(message):
     chat_id = message.chat.id
     raw_2fa = message.text.strip()
-    otp_secret = None if raw_2fa.lower() == 'none' else raw_2fa
+    
+    # ২এফএ সিক্রেট থেকে স্পেস রিমুভ করা
+    otp_secret = None if raw_2fa.lower() == 'none' else raw_2fa.replace(" ", "")
 
     user_data[chat_id]['2fa'] = otp_secret
     usernames = user_data[chat_id]['usernames']
     password = user_data[chat_id]['password']
     total_count = len(usernames)
 
-    # আপনার টার্গেট URL এখানে দিন
-    target_url = "https://example.com/login"
+    # আপনার নির্দিষ্ট লগইন URL দিন (উদাহরণস্বরূপ Instagram)
+    target_url = "https://www.instagram.com/accounts/login/"
 
     bot.send_message(chat_id, f"🤖 **কাজ শুরু হয়েছে... মোট {total_count} টি অ্যাকাউন্ট প্রসেস করা হচ্ছে।**", parse_mode='Markdown')
 
