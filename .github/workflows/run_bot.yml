@@ -1,7 +1,7 @@
 name: Test Run Telegram Bot
 
 on:
-  workflow_dispatch: # অপশনটি দিলে ম্যানুয়ালি রান করা যাবে
+  workflow_dispatch: # Actions ট্যাব থেকে ম্যানুয়ালি রান করার জন্য
 
 jobs:
   run-bot:
@@ -22,4 +22,6 @@ jobs:
         pip install -r requirements.txt
 
     - name: Run Bot
+      env:
+        BOT_TOKEN: ${{ secrets.BOT_TOKEN }} # GitHub Secret থেকে টোকেন ইনপুট নেবে
       run: python bot.py
