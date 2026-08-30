@@ -28,7 +28,7 @@ def run_single_test_login(url, username, password, otp_secret):
         driver.get(url)
         time.sleep(2)
 
-        # ১. ইউজারনেম ও পাসওয়ার্ড ইনপুট (লক্ষ্যণীয়: আপনার সাইটের ফর্ম ফিল্ড নাম অনুযায়ী এগুলো আপডেট করুন)
+        # ১. ইউজারনেম ও পাসওয়ার্ড ইনপুট
         driver.find_element(By.NAME, "username").send_keys(username)
         driver.find_element(By.NAME, "password").send_keys(password)
         driver.find_element(By.XPATH, '//button[@type="submit"]').click()
@@ -58,7 +58,8 @@ def run_single_test_login(url, username, password, otp_secret):
 # ----------------- Telegram Bot Handlers -----------------
 @bot.message_handler(commands=['start'])
 def send_welcome(message):
-    markup = types.ReplyKeyboardMarkup(row_width=1, resize_keyboard=True)
+    # এখানে বাটন তৈরি এবং সেটআপ করা হয়েছে
+    markup = types.ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=False)
     btn_start = types.KeyboardButton("🚀 কাজ শুরু করো")
     markup.add(btn_start)
 
@@ -109,7 +110,7 @@ def process_all_data(message):
     password = user_data[chat_id]['password']
     total_count = len(usernames)
 
-    # উদাহরণস্বরূপ একটি টার্গেট URL (আপনার প্রয়োজনীয় সাইটের URL দিন)
+    # আপনার টার্গেট URL এখানে দিন
     target_url = "https://example.com/login"
 
     bot.send_message(chat_id, f"🤖 **কাজ শুরু হয়েছে... মোট {total_count} টি অ্যাকাউন্ট প্রসেস করা হচ্ছে।**", parse_mode='Markdown')
