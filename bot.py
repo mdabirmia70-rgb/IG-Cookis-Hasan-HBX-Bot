@@ -1,8 +1,9 @@
+import os
 import telebot
 
-# আপনার টেলিগ্রাম বট টোকেনটি এখানে বসান
-BOT_TOKEN = "YOUR_BOT_TOKEN_HERE"
-bot = telebot.Telebot(BOT_TOKEN)
+# GitHub Secret থেকে BOT_TOKEN লোড করবে
+BOT_TOKEN = os.getenv("BOT_TOKEN")
+bot = telebot.TeleBot(BOT_TOKEN)
 
 @bot.message_handler(commands=['start'])
 def send_welcome(message):
@@ -22,3 +23,6 @@ def start_work(message):
     bot.reply_to(message, "👤 **ইউজারনেম লিস্ট দাও (প্রতি লাইনে একটি):**", parse_mode='Markdown')
 
 bot.infinity_polling()
+
+
+
